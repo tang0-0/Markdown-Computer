@@ -1,5 +1,8 @@
 # SFUD 一款嵌入式SPI FLASH驱动组件
 
+>源仓库：https://github.com/armink/SFUD
+>移植例程仓库：https://gitee.com/ll0_0ll/Packages-practice
+
 ## 简介
 
 ### 1.功能
@@ -24,12 +27,13 @@
 
 ## 移植
 
-### 准备
+### 1.准备
 
-芯片：STM32F103
-外设：
+芯片：STM32F103xE		W25Q128
+外设：SPI2	UART1
+软件：串口调试工具
 
-### 适配接口
+### 2.适配接口
 
 需要适配的接口都在`sfud_port.c`中
 ```c
@@ -45,9 +49,180 @@ void sfud_log_info(const char *format, ...);
 
 ```
 
-### 适配步骤
+### 3.适配步骤
 
-1. 适配接口
-2. 定义flash对象
-3. 调用接口
+1. 定义flash对象(`sfud_cfg.h`)
 
+```c
+enum {
+    SFUD_XXXX_DEVICE_INDEX = 0,
+};
+
+#define SFUD_FLASH_DEVICE_TABLE                                                \
+{                                                                              \
+    [SFUD_XXXX_DEVICE_INDEX] = {.name = "TEST", .spi.name = "SPI2"},           \
+}
+```
+
+2. 适配接口(`sfud_port.c`)
+
+```c
+/* 1.初始化接口 */
+sfud_err sfud_spi_port_init(sfud_flash *flash)
+{
+    sfud_err result = SFUD_SUCCESS;
+
+    switch (flash->index)
+    {
+    case SFUD_XXXX_DEVICE_INDEX:
+    {
+        spi2_init();
+        /* 同步 Flash 移植所需的接口及数据 */
+        flash->spi.wr = spi_write_read;
+        flash->spi.lock = spi_lock;
+        flash->spi.unlock = spi_unlock;
+        /* about 100 microsecond delay */
+        flash->retry.delay = retry_delay_100us;
+        /* adout 3 seconds timeout */
+        flash->retry.times = 3 * 10000;
+
+        break;
+    }
+    }
+    return result;
+}
+
+/* 2.读写接口 */
+static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf,
+                               size_t write_size, uint8_t *read_buf,
+                               size_t read_size)
+{
+    sfud_err result = SFUD_SUCCESS;
+    uint8_t send_data, read_data;
+
+    if (write_size)
+    {
+        SFUD_ASSERT(write_buf);
+    }
+    if (read_size)
+    {
+        SFUD_ASSERT(read_buf);
+    }
+
+    SPI_FLASH_CS_EN();
+    for (size_t i = 0, retry_times; i < write_size + read_size; i++)
+    {
+        /* 先写缓冲区中的数据到 SPI 总线，数据写完后，再写 dummy(0xFF) 到 SPI 总线 */
+        if (i < write_size)
+        {
+            send_data = *write_buf++;
+        }
+        else
+        {
+            send_data = SFUD_DUMMY_DATA;
+        }
+        /* 发送数据 */
+        retry_times = 1000;
+        while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET)
+        {
+            SFUD_RETRY_PROCESS(NULL, retry_times, result);
+        }
+        if (result != SFUD_SUCCESS)
+        {
+            goto exit;
+        }
+        SPI_I2S_SendData(SPI2, send_data);
+        /* 接收数据 */
+        retry_times = 1000;
+        while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET)
+        {
+            SFUD_RETRY_PROCESS(NULL, retry_times, result);
+        }
+        if (result != SFUD_SUCCESS)
+        {
+            goto exit;
+        }
+        read_data = SPI_I2S_ReceiveData(SPI2);
+        /* 写缓冲区中的数据发完后，再读取 SPI 总线中的数据到读缓冲区 */
+        if (i >= write_size)
+        {
+            *read_buf++ = read_data;
+        }
+    }
+
+exit:
+    SPI_FLASH_CS_DIS();
+
+    return result;
+}
+
+```
+
+3. 调用接口(可在`sfud.h`中查看可供调用的API)
+
+```C
+int main(void)
+{
+    sfud_flash *flash;
+    sfud_err result = SFUD_ERR_NOT_FOUND;
+    uint8_t sfud_Write_buf[] = "SFUD TEST!";
+    uint8_t sfud_Read_buf[30];
+    uint32_t addr = 0x00000000;
+    size_t size = sizeof(sfud_Write_buf);
+
+    /* 串口一用来打印调试信息 */
+    single_uart_init();
+    printf("enter sfud test\r\n");
+
+    flash = sfud_get_device(SFUD_XXXX_DEVICE_INDEX);
+
+    if (sfud_device_init(flash) == SFUD_SUCCESS)
+        printf("SFUD Init Success\r\n");
+    else
+        printf("SFUD Init Failed\r\n");
+    
+    result = sfud_erase(flash, addr, size);
+    if (result == SFUD_SUCCESS)
+    {
+        printf("Erase the %s flash data finish. Start from 0x%08X, size is %zu.\r\n", flash->name,
+               addr, size);
+    }
+    else
+    {
+        printf("Erase the %s flash data failed.\r\n", flash->name);
+    }
+
+    result = sfud_write(flash, addr, size, sfud_Write_buf);
+    if (result == SFUD_SUCCESS)
+    {
+        printf("Write the %s flash data finish. Start from 0x%08X, size is %zu.\r\n", flash->name,
+               addr, size);
+    }
+    else
+    {
+        printf("Write the %s flash data failed.\r\n", flash->name);
+
+    }
+
+    result = sfud_read(flash, addr, size, sfud_Read_buf);
+    if (result == SFUD_SUCCESS)
+    {
+        printf("Read the %s flash data success. Start from 0x%08X, size is %zu.\r\n", flash->name,
+               addr, size);
+        printf("The data is:%s", sfud_Read_buf);
+        printf("\r\n");
+    }
+    else
+    {
+        printf("Read the %s flash data failed.\r\n", flash->name);
+    }
+    
+
+    while(1);
+}
+
+```
+
+4. 打印信息
+
+![](SFUD%20%E4%B8%80%E6%AC%BE%E5%B5%8C%E5%85%A5%E5%BC%8FSPI%E9%A9%B1%E5%8A%A8%E7%BB%84%E4%BB%B6.assets/sfud.png)
