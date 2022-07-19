@@ -54,8 +54,6 @@ I2C总线的10bit寻址和7bit寻址是兼容的，这样就可以在同一个�
 - 空闲状态
   SCL和SDA都为高电平时，代表总线空闲。
 
-
-
 ![iic.png](IIC协议理解.assets/470747468484df7e5880f3d8565f5416b76cae2a.png)
 
 - 起始信号
@@ -63,7 +61,6 @@ I2C总线的10bit寻址和7bit寻址是兼容的，这样就可以在同一个�
   起始信号由主机发起，在SCL高电平期间，SDA提供一个下降沿
 
 ```c
-
 void iic_start(void)
 {
     SCL = 1;
@@ -83,7 +80,6 @@ void iic_start(void)
   起始信号由主机发起，在SCL高电平期间，SDA提供一个上升沿
 
 ```c
-
 void iic_stop(void)
 {
     SCL = 0;
@@ -219,7 +215,7 @@ uint8_t iic_receive_byte(void)
 
 4. 接收一个字节数据
 
-5. 发送ACK或者NACK
+5. 发送ACK(最后一个字节时发送NACK，告诉从机不要再发送了)
 
 6. 重复N遍第4和第5步
 
