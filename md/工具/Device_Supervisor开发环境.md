@@ -65,4 +65,18 @@
    
    ![](C:\Users\ta\AppData\Roaming\marktext\images\2023-01-18-18-11-22-image.png)
 
+## 开发流程
+
+1. 通过SSH登录虚拟机，进入代码文件
+
+2. 修改代码后，在对应目录下执行`make`
+
+3. 然后将可执行文件通过SFTP上传到网关中，上传的文件会在`/var/user/app/device_supervisor/src/`对应目录下
+
+4. 修改设备中执行文件的权限`u+x`,将`/var/user/lib:/var/user/app/device_supervisor/lib`添加LD_LIBRARY_PATH
+
+5. 可以在该目录下手动执行进程，不过重启后并不会自动执行
+
+6. 把执行文件复制到`/var/user/app/device_supervisor`下，执行文件才会在开机时自动执行
+
 
