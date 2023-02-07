@@ -26,4 +26,12 @@
 
 ![](Device_Supervisor调试环境.assets/2023-01-31-13-21-56-image.png)
 
+## 文件路径
+
+1. app执行文件：/var/user/app/device_supervisor
+
+2. app配置文件：/var/run/python/cfg/device_supervisor
+
+3. app日志文件：/var/user/log/device_supervisor
+
 

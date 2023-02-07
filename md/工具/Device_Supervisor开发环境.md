@@ -80,3 +80,17 @@
 6. 可以在该目录下手动执行进程，不过重启后并不会自动执行
 
 7. 把执行文件复制到`/var/user/app/device_supervisor`下，执行文件才会在开机时自动执行
+
+```bash
+# 修改文件权限
+chmod u+x ModbusDriver
+
+# 添加运行时动态链接库路径
+LD_LIBRARY_PATH=/var/user/lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH                                                                                /lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH                                                                                 /lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH
+
+# 启动服务
+/var/user/app/device_supervisor/ModbusDriver', '-s', '2000', '-c', '/var/run/python/cfg/device_supervisor/test00-0.conf
+
+# 终止服务
+killall ModbusDriver
+```
