@@ -86,11 +86,19 @@
 chmod u+x ModbusDriver
 
 # 添加运行时动态链接库路径
-LD_LIBRARY_PATH=/var/user/lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH                                                                                /lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH                                                                                 /lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH
-
+export LD_LIBRARY_PATH=/var/user/lib:/var/user/app/device_supervisor/lib:$LD_LIBRARY_PATH                                                  
 # 启动服务
 /var/user/app/device_supervisor/ModbusDriver', '-s', '2000', '-c', '/var/run/python/cfg/device_supervisor/test00-0.conf
 
 # 终止服务
 killall ModbusDriver
+
+# 终止master
+killall python
+
+# 查看日志
+tail -f /var/user/log/device_supervisor.log
+
+# 复制到master管理目录
+cp /var/user/app/device_supervisor/src/MicroPowerDriver/MicroPowerDriver /var/user/app/device_supervisor/
 ```
