@@ -7,6 +7,8 @@ Euromap 63是欧洲塑料和橡胶机械制造商协会颁布的专用于注塑�
 ## 二、框架
 
 Euromap 63是一种基于文件共享的通信协议，注塑机和上位机共享同一个文件目录，通过读写文件的方式来交互。比如说上位机向目录中写入一个request.REQ文件发起一个请求，注塑机读取这个文件，处理之后再写入一个response.RSP文件，上位机读取它获取结果。
+
+
 协议只规定了文件交互的流程和格式，并没有规定使用哪种文件共享协议。目前调研来看使用FTP协议的比较多，并且一般是注塑机作为client，上位机作为server来维护共享目录。
 
 ![](Euromap63协议认识.assets/2023-03-07-10-02-07-image.png)
@@ -72,5 +74,3 @@ Euromap 63是一种基于文件共享的通信协议，注塑机和上位机共�
 2. [kepware怎么读modbus/tcp数据_注塑机设备联网？EUROMAP 63？Kepware快速帮您搞定！_weixin_39863631的博客-CSDN博客](https://blog.csdn.net/weixin_39863631/article/details/110102987)
 
 3. 这个软件支持Euromap63协议读取注塑机参数：[KEPserverEX OT 连接平台 | PTC](https://www.ptc.com/cn/products/kepware/kepserverex)
-
-
