@@ -81,6 +81,8 @@
 
 7. 把执行文件复制到`/var/user/app/device_supervisor`下，执行文件才会在开机时自动执行
 
+8. 全部编译命令`./build.sh gnu`
+
 ```bash
 # 修改文件权限
 chmod u+x ModbusDriver
