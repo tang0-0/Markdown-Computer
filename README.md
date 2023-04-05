@@ -1,3 +1,3 @@
-# Markdown-computer
+# Markdown-Computer
 
-个人整理的一些对计算机系统的笔记。
+个人关于计算机工程的笔记。
