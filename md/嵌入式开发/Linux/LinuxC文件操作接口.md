@@ -5,11 +5,12 @@
 1. 创建文件：
     - FILE *fopen( const char *filename, const char *mode );
     - int open(const char *pathname, int flags, mode_t mode)；
-2. 删除文件：
-    - int remove(const char *filename);
-    - int unlink(const char *path);
+2. 删除文件和空目录：int remove(const char *filename);
 3. 创建目录：int mkdir(const char *pathname, mode_t mode);
 4. 删除空目录：int rmdir(const char *pathname);
+5. 创建软链接：int symlink(const char *oldpath, const char *newpath);
+6. 创建硬链接：int link(const char *oldpath, const char *newpath);
+7. 删除链接：int unlink(const char *path);
 
 ## 打开与关闭
 
@@ -50,6 +51,7 @@ int fprintf(FILE *stream, const char *format, ...);
 9. 格式化读取数据
 int fscanf(FILE *stream, const char *format, ...);
 10. 读取目录内容：struct dirent *readdir(DIR *dirp);
+11. 读取链接内容：ssize_t readlink(const char *pathname, char *buf, size_t bufsiz);
 
 ## 设置与获取参数
 
