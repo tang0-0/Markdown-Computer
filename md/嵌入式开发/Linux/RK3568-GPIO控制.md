@@ -8,7 +8,7 @@
 Linux系统本身就含有GPIO子系统模块，它对下接入GPIO控制器的驱动，对上提供一组API接口给其它驱动调用来管理GPIO控制器。
 Sysfs-GPIO通过对GPIO子系统的API的调用实现了一套对用户空间的接口，相当于这是linux官方实现的一个通用GPIO驱动。
 
-![Alt text](RK3568-GPIO控制.assets/gpio.jpg)
+![Alt text](images/gpio.jpg)
 
 ### 使用方法
 
