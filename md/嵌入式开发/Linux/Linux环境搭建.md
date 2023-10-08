@@ -23,3 +23,5 @@ VirtualBox:<https://www.virtualbox.org/wiki/Downloads>
 1. 更换国内软件源
 2. 安装增强功能
 3. 开启ssh服务
+
+## 6. 制作Ubuntu备份镜像
