@@ -1,0 +1,84 @@
+# BIN/HEX/AXF文件
+
+## 介绍
+
+**BIN文件**
+
+- 定义：BIN文件是二进制文件，通常包含直接可供计算机处理的机器代码。
+- 用途：常用于嵌入式系统中，直接烧录到设备的闪存或其他存储器中。
+- 特点：文件格式简单，没有额外的元数据，因此体积较小。
+
+**HEX文件**
+
+- 定义：HEX文件格式是由Intel公司定义的，HEX文件通常以文本格式保存，以十六进制表示数据，包含地址和校验和信息。
+- 用途：广泛用于嵌入式编程，尤其是在向微控制器或编程器传输数据时。
+- 特点：易于人类阅读，便于调试，通常包含更多关键信息（如地址）
+
+**AXF文件**
+
+- 定义：AXF（ARM Executable Format）文件由ARM公司定义的，包含程序代码、数据以及调试信息。
+- 用途：常用于应用程序的开发和调试，特别是与ARM开发工具（如Keil）配合使用。
+- 特点：支持多种信息，如符号表和信息，便于调试和优化。
+
+## 转换
+
+利用MDK自带的fromelf.exe可以方便地进行这几种格式的转换
+
+1. AXF转换成BIN
+
+    `fromelf --bin -o "$L@L.bin" "$L@L.axf"`
+
+2. AXF转换成HEX
+
+    `fromelf --i32 --output "$L@L.hex" "$L@L.axf"`
+
+3. HEX转换成BIN
+
+    <https://blog.csdn.net/lblmlms/article/details/141021891>
+
+4. AXF转换成汇编
+
+    `fromelf -a -c -o "$L@L.txt" "$L@L.axf"`
+
+5. fromelf命令行参数
+```
+fromelf [options] input_file  (命令的格式)
+
+Options:
+       --help         display this help screen (显示帮助信息)
+       --vsn          display version information (显示版本信息)
+       --output file  the output file. (defaults to stdout for -text format) (输出文件(默认的输出为文本格式))
+       --nodebug      do not put debug areas in the output image (在生成的映象中不包含调试信息)
+       --nolinkview   do not put sections in the output image (在生成的映象中不包含段的信息)
+
+Binary Output Formats:
+       --bin          Plain Binary (生成Plain Binary格式的文件)
+       --m32          Motorola 32 bit Hex (生成Motorola 32位十六进制格式的文件)
+       --i32          Intel 32 bit Hex (生成Intel 32位十六进制格式的文件)
+       --vhx          Byte Oriented Hex format (面向字节的位十六进制格式的文件t)
+
+       --base addr    Optionally set base address for m32,i32 (设置m32，i32格式文件的基地址)
+
+Output Formats Requiring Debug Information (需要调试信息的格式)
+       --fieldoffsets Assembly Language Description of Structures/Classes (结构/类的汇编语言描述)
+       --expandarrays Arrays inside and outside structures are expanded (扩展数组内部和外部结构被扩展)
+
+Other Output Formats:
+       --elf         ELF
+       --text        Text Information (显示文本信息)
+
+                Flags for Text Information
+                -v          verbose (打印详细信息)
+                -a          print data addresses (For images built with debug) (打印数据地址(针对带调试信息的映象))
+                -c          disassemble code (打印反汇编代码)
+                -d          print contents of data section (打印数据段的内容)
+                -e          print exception tables (打印表达式表)
+                -g          print debug tables (打印调试表)
+                -r          print relocation information (打印重定位信息)
+                -s          print symbol table (打印字符表)
+                -t          print string table (打印字符串表)
+                -y          print dynamic segment contents (打印动态段的内容)
+                -z          print code and data size information (打印代码和数据大小的信息)
+
+```
+
